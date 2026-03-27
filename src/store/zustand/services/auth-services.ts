@@ -1,7 +1,10 @@
 import { API_ROUTES } from "@/lib/configs/api";
 import { api } from "@/lib/utils/api-client";
 import { handleError } from "@/lib/utils/handleError";
-import type { LoginInput, RegisterInput } from "@/lib/validations/auth.schema";
+import type {
+  LoginInput,
+  RegisterApiPayload,
+} from "@/lib/validations/auth.schema";
 import type { User } from "@/types/auth.types";
 
 function unwrapUser(payload: unknown): User {
@@ -17,7 +20,7 @@ function unwrapUser(payload: unknown): User {
 }
 
 export const authServices = {
-  register: async (data: RegisterInput): Promise<User> => {
+  register: async (data: RegisterApiPayload): Promise<User> => {
     try {
       const response = await api.post(API_ROUTES.AUTH.REGISTER, data);
       return unwrapUser(response.data.data);
@@ -46,6 +49,15 @@ export const authServices = {
   getMe: async (): Promise<User> => {
     try {
       const response = await api.get(API_ROUTES.AUTH.ME);
+      return unwrapUser(response.data.data);
+    } catch (error) {
+      throw new Error(handleError(error));
+    }
+  },
+
+  patchMe: async (body: { defaultCity?: string | null }): Promise<User> => {
+    try {
+      const response = await api.patch(API_ROUTES.AUTH.ME, body);
       return unwrapUser(response.data.data);
     } catch (error) {
       throw new Error(handleError(error));
