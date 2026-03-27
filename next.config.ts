@@ -37,7 +37,14 @@ const nextConfig: NextConfig = {
   },
 
   async redirects() {
-    return [];
+    return [
+      /** Browsers request `/favicon.ico` by default; without it many show a generic host favicon. */
+      {
+        source: "/favicon.ico",
+        destination: "/icon.png",
+        permanent: false,
+      },
+    ];
   },
 };
 

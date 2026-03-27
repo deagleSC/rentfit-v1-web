@@ -7,7 +7,6 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
-import { ModeToggle } from "@/components/ui/mode-toggle";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -25,9 +24,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               orientation="vertical"
               className="mr-2 data-[orientation=vertical]:h-7"
             />
-          </div>
-          <div className="flex items-center gap-2">
-            <ModeToggle />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-6">{children}</div>

@@ -20,6 +20,7 @@ export const API_ROUTES = {
     LIST: "/api/service-areas",
   },
   CHAT: "/api/chat",
+  /** Collection or `GET /api/chats/:id` */
   CHATS: "/api/chats",
   HEALTH: "/health",
 } as const;

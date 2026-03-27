@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { AlertTriangle, Home, RefreshCw } from "lucide-react";
+import { RentfitLogo } from "@/components/brand/rentfit-logo";
 import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/components/ui/button-variants";
 import {
@@ -68,6 +69,9 @@ export function NotFoundError() {
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
+          <div className="mb-4 flex justify-center">
+            <RentfitLogo size={44} className="rounded-lg" />
+          </div>
           <CardTitle className="text-muted-foreground mb-2 text-6xl font-bold">
             404
           </CardTitle>

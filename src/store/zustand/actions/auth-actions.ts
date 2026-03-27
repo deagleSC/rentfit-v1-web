@@ -1,10 +1,13 @@
 import { useAuthStore } from "../stores/auth-store";
 import { authServices } from "../services/auth-services";
-import type { LoginInput, RegisterInput } from "@/lib/validations/auth.schema";
+import type {
+  LoginInput,
+  RegisterApiPayload,
+} from "@/lib/validations/auth.schema";
 import type { User } from "@/types/auth.types";
 
 export const authActions = {
-  register: async (data: RegisterInput): Promise<User> => {
+  register: async (data: RegisterApiPayload): Promise<User> => {
     const { setLoading, setError, setUser } = useAuthStore.getState();
     setLoading(true);
     setError(null);
@@ -61,6 +64,21 @@ export const authActions = {
       throw new Error(message);
     } finally {
       setLoading(false);
+    }
+  },
+
+  patchMe: async (body: { defaultCity?: string | null }): Promise<User> => {
+    const { setError, setUser } = useAuthStore.getState();
+    setError(null);
+    try {
+      const user = await authServices.patchMe(body);
+      setUser(user);
+      return user;
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Could not update profile";
+      setError(message);
+      throw new Error(message);
     }
   },
 };

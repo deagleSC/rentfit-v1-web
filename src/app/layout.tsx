@@ -10,10 +10,24 @@ const fontSans = Outfit({
   variable: "--font-sans",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+/**
+ * Open Graph / canonical URLs must match the deployed host. On Vercel, set
+ * NEXT_PUBLIC_SITE_URL or rely on VERCEL_URL so favicon and metadata are not
+ * generated as http://localhost (broken icons in production).
+ */
+function getMetadataBase(): URL {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (explicit) {
+    return new URL(explicit.endsWith("/") ? explicit.slice(0, -1) : explicit);
+  }
+  if (process.env.VERCEL_URL) {
+    return new URL(`https://${process.env.VERCEL_URL}`);
+  }
+  return new URL("http://localhost:3000");
+}
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: getMetadataBase(),
   title: {
     default: "RentFit",
     template: "%s | RentFit",

@@ -11,10 +11,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   registerSchema,
+  type RegisterApiPayload,
   type RegisterInput,
 } from "@/lib/validations/auth.schema";
 import { authActions } from "@/store";
-import { cn } from "@/lib/utils";
 
 export function SignupForm() {
   const router = useRouter();
@@ -27,13 +27,18 @@ export function SignupForm() {
     formState: { errors },
   } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { role: "renter" },
+    defaultValues: { role: "renter", confirmPassword: "" },
   });
 
   const onSubmit = async (data: RegisterInput) => {
     setIsLoading(true);
     try {
-      await authActions.register(data);
+      const payload: RegisterApiPayload = {
+        email: data.email,
+        password: data.password,
+        role: "renter",
+      };
+      await authActions.register(payload);
       toast.success("Account created");
       router.push("/search");
     } catch (error) {
@@ -59,7 +64,7 @@ export function SignupForm() {
         )}
       </div>
 
-      <div className="space-y-2">
+      {/* <div className="space-y-2">
         <Label htmlFor="role">I am a</Label>
         <select
           id="role"
@@ -77,7 +82,7 @@ export function SignupForm() {
         {errors.role && (
           <p className="text-destructive text-sm">{errors.role.message}</p>
         )}
-      </div>
+      </div> */}
 
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
@@ -97,6 +102,7 @@ export function SignupForm() {
             className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
             onClick={() => setShowPassword(!showPassword)}
             disabled={isLoading}
+            aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? (
               <EyeOff className="text-muted-foreground size-4" />
@@ -106,11 +112,46 @@ export function SignupForm() {
           </Button>
         </div>
         {errors.password && (
-          <p className="text-destructive text-sm">{errors.password.message}</p>
+          <p className="text-red-800 text-sm">{errors.password.message}</p>
         )}
         <p className="text-muted-foreground text-xs">
-          Must be at least 8 characters (same rules as the API).
+          Must be at least 8 characters.
         </p>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="confirmPassword">Confirm password</Label>
+        <div className="relative">
+          <Input
+            id="confirmPassword"
+            type={showPassword ? "text" : "password"}
+            placeholder="Re-enter your password"
+            autoComplete="new-password"
+            {...register("confirmPassword")}
+            disabled={isLoading}
+            className="pr-10"
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+            onClick={() => setShowPassword(!showPassword)}
+            disabled={isLoading}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? (
+              <EyeOff className="text-muted-foreground size-4" />
+            ) : (
+              <Eye className="text-muted-foreground size-4" />
+            )}
+          </Button>
+        </div>
+        {errors.confirmPassword && (
+          <p className="text-red-800 text-sm">
+            {errors.confirmPassword.message}
+          </p>
+        )}
       </div>
 
       <Button type="submit" className="w-full" disabled={isLoading}>
