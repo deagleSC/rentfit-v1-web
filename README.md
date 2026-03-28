@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RentFit Web
 
-## Getting Started
+Next.js frontend for RentFit: search, listings, maps, and AI chat backed by the RentFit API.
 
-First, run the development server:
+## Requirements
+
+- Node.js **20+** (align with backend)
+- Running the **rentfit-v1-be** API (local or deployed; see `../rentfit-v1-be` if you keep both repos side by side)
+
+## Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Set `NEXT_PUBLIC_API_URL` to your API base URL with **no trailing slash** (e.g. `http://localhost:8000` locally).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Purpose |
+|----------|---------|
+| `NEXT_PUBLIC_API_URL` | Backend base URL. Must match an origin allowed by the API’s `CORS_ORIGIN` |
+| `NEXT_PUBLIC_SITE_URL` | Canonical site URL for metadata and absolute asset URLs. On Vercel you can rely on `VERCEL_URL` if unset |
 
-## Learn More
+`NEXT_PUBLIC_*` variables are embedded at **build time**; redeploy after changing them on Vercel.
 
-To learn more about Next.js, take a look at the following resources:
+## Scripts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Command | Description |
+|--------|-------------|
+| `npm run dev` | Next.js dev server (default [http://localhost:3000](http://localhost:3000)) |
+| `npm run build` | Production build |
+| `npm start` | Start production server (after `build`) |
+| `npm run lint` | ESLint |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Local development
 
-## Deploy on Vercel
+1. Start MongoDB and the API (see the backend README), typically on port **8000**.
+2. Point `.env` at the API:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:8000
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. Run the app:
+
+   ```bash
+   npm run dev
+   ```
+
+The app uses **httpOnly session cookies** from the API (`withCredentials` / `credentials: "include"`). The frontend origin must be listed in the backend `CORS_ORIGIN`.
+
+## Deploying on Vercel
+
+1. Create a Vercel project from this repo.
+2. Set **Environment Variables**:
+   - `NEXT_PUBLIC_API_URL` — your deployed API origin, e.g. `https://your-api.vercel.app`
+   - `NEXT_PUBLIC_SITE_URL` — your deployed app URL, e.g. `https://your-app.vercel.app` (recommended for stable metadata)
+3. On the **backend** project, add your frontend URL to `CORS_ORIGIN` and avoid `AUTH_COOKIE_SAMESITE=lax` when UI and API are on different hosts.
+4. Redeploy the frontend so `NEXT_PUBLIC_*` picks up new values.
+
+## Tech stack
+
+- [Next.js](https://nextjs.org/) 16 (App Router)
+- React 19, TypeScript, Tailwind CSS
+- [Vercel AI SDK](https://sdk.vercel.ai/) (`@ai-sdk/react`, `ai`) for chat
+- Axios API client with credentials for JSON routes
+
+## Related
+
+- Backend: [rentfit-v1-be](../rentfit-v1-be) — Express API, MongoDB, OpenRouter chat.
